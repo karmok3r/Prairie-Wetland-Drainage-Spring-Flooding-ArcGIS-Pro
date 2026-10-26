@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prairie Wetland Storage</title>
+<meta name="description" content="Remaining prairie pothole storage from LiDAR, wetland status and spring runoff trends for 12 gauged basins in southeast Saskatchewan.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root {
+    --ink: #1d1d1b; --ink2: #55554f; --muted: #8a8a82; --line: #e2e1dc;
+    --panel: #fcfcfb; --accent: #2a78d6;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--panel); color: var(--ink); }
+  #app { display: flex; height: 100%; }
+  #panel { width: 360px; flex: none; overflow-y: auto; padding: 20px 20px 24px;
+           border-right: 1px solid var(--line); background: var(--panel); }
+  #map { flex: 1; min-width: 0; }
+  #panel > * { max-width: 100%; }
+  .stat div { min-width: 0; }
+  h1 { font-size: 20px; line-height: 1.25; margin: 0 0 8px; }
+  p { font-size: 14px; line-height: 1.5; color: var(--ink2); margin: 0 0 12px; }
+  .tabs { display: flex; gap: 4px; margin: 16px 0 12px; }
+  .tabs button { flex: 1; padding: 8px 6px; font: inherit; font-size: 13px; cursor: pointer;
+                 border: 1px solid var(--line); background: #fff; color: var(--ink2); border-radius: 6px; }
+  .tabs button[aria-pressed="true"] { border-color: var(--accent); color: var(--ink);
+                                       box-shadow: inset 0 0 0 1px var(--accent); }
+  .legend h2 { font-size: 13px; font-weight: 600; margin: 14px 0 6px; }
+  .legend div { display: flex; align-items: center; gap: 8px; font-size: 13px; margin: 3px 0; color: var(--ink2); }
+  .sw { width: 18px; height: 12px; border-radius: 2px; flex: none; border: 1px solid rgba(0,0,0,.15); }
+  .tri { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent;
+         border-bottom: 11px solid #0b0b0b; margin: 0 3px; }
+  .btn { display: block; width: 100%; margin: 16px 0 0; padding: 9px; font: inherit; font-size: 13px;
+         cursor: pointer; border: 1px solid var(--accent); background: #fff; color: var(--accent); border-radius: 6px; }
+  .note { font-size: 12px; color: var(--muted); margin-top: 16px; }
+  .note a, p a { color: var(--accent); }
+  .stat { display: flex; gap: 12px; margin: 12px 0 4px; }
+  .stat div { flex: 1; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  .stat b { display: block; font-size: 20px; }
+  .stat span { font-size: 12px; color: var(--ink2); }
+  .leaflet-popup-content { font-size: 13px; margin: 12px 14px; }
+  .leaflet-popup-content table { border-collapse: collapse; }
+  .leaflet-popup-content td { padding: 2px 0; }
+  .leaflet-popup-content td:last-child { text-align: right; padding-left: 14px; font-variant-numeric: tabular-nums; }
+  .leaflet-popup-content h3 { margin: 0 0 6px; font-size: 14px; }
+  .label { background: none; border: none; box-shadow: none; font-size: 11px; font-weight: 600;
+           color: var(--ink); text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff; }
+  .label::before { display: none; }
+  #loading { display: none; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  @media (max-width: 760px) {
+    #app { flex-direction: column-reverse; }
+    #panel { width: 100%; height: 45%; border-right: none; border-top: 1px solid var(--line); padding: 14px 16px 20px; }
+    #map { height: 55%; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="panel">
+    <h1>Prairie pothole storage and spring runoff, southeast Saskatchewan</h1>
+    <p>Each basin is coloured by how much snowmelt its remaining potholes can hold, mapped from 4 m NRCan LiDAR. Click a basin for its numbers.</p>
+    <div class="stat">
+      <div><b>−0.84</b><span>Spearman ρ, storage vs spring runoff ratio (p = 0.001)</span></div>
+      <div><b>9 of 12</b><span>basins with a significant rise in runoff ratio, 1980–2023</span></div>
+    </div>
+    <div class="tabs" role="group" aria-label="Basin colouring">
+      <button id="t-storage" aria-pressed="true">Pothole storage</button>
+      <button id="t-trend" aria-pressed="false">Runoff trend</button>
+    </div>
+    <div class="legend" id="legend"></div>
+    <button class="btn" id="smith">Zoom to Smith Creek potholes</button>
+    <div id="loading">Loading 7,540 potholes…</div>
+    <p class="note">Data: NRCan HRDEM LiDAR, AAFC Watersheds Project 2013 and Annual Crop Inventory 2009–2025, Water Survey of Canada (HYDAT), Daymet v4. Analysis in ArcGIS Pro (arcpy). Method, limitations and code: <a href="https://github.com/karmok3r/Prairie-Wetland-Drainage-Spring-Flooding-ArcGIS-Pro">GitHub repository</a>. Uday Karmoker, 2026.</p>
+  </aside>
+  <div id="map" role="region" aria-label="Map of basins"></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const BLUES = ["#cde2fb", "#86b6ef", "#3987e5", "#1c5cab"];
+const ORANGES = ["#fde0cf", "#f6a77f", "#eb6834", "#b8461b"];
+const STATUS = {"Persistent wetland": "#1c5cab", "Intermittent wetland": "#86b6ef",
+                "Farmed through": "#eb6834", "Grassland / other": "#c3c2b7"};
+const VIEWS = {
+  storage: {field: "STORAGE_MM", breaks: [25, 50, 75], colors: BLUES, title: "Remaining pothole storage",
+            labels: ["< 25 mm", "25–50 mm", "50–75 mm", "> 75 mm"]},
+  trend: {field: "SEN_SLOPE", breaks: [0.01, 0.02, 0.03], colors: ORANGES,
+          title: "Change in spring runoff ratio per decade",
+          labels: ["< 0.01", "0.01–0.02", "0.02–0.03", "> 0.03"]},
+};
+let view = "storage";
+
+const map = L.map("map", {zoomSnap: 0.5}).setView([51.2, -103.5], 7);
+const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/";
+L.tileLayer(ESRI + "World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+  maxZoom: 16, attribution: "Esri, TomTom, Garmin, FAO, NOAA, USGS, &copy; OpenStreetMap contributors, and the GIS User Community"
+}).addTo(map);
+map.createPane("reference").style.zIndex = 450;  // place names above the basin fills
+map.getPane("reference").style.pointerEvents = "none";
+L.tileLayer(ESRI + "World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+  maxZoom: 16, pane: "reference"
+}).addTo(map);
+
+const fmt = (v, d = 1) => v == null ? "–" : Number(v).toLocaleString("en-CA", {maximumFractionDigits: d, minimumFractionDigits: d});
+const classify = (v, breaks) => breaks.filter(b => v >= b).length;
+
+function popup(p) {
+  const sig = p.TREND_P < 0.05 ? "" : " (not significant)";
+  return `<h3>${p.BASIN_NAME}</h3><table>
+    <tr><td>Gauge</td><td>${p.STATION_NUMBER}</td></tr>
+    <tr><td>Area</td><td>${fmt(p.GROSS_KM2, 0)} km²</td></tr>
+    <tr><td>Potholes ≥ 0.1 ha</td><td>${fmt(p.N_DEPRESSIONS, 0)}</td></tr>
+    <tr><td>Depression area</td><td>${fmt(p.DEPRESSION_AREA_PCT)}%</td></tr>
+    <tr><td><b>Pothole storage</b></td><td><b>${fmt(p.STORAGE_MM)} mm</b></td></tr>
+    <tr><td>Storage farmed through</td><td>${fmt(p.FARMED_PCT)}%</td></tr>
+    <tr><td>Median spring runoff ratio</td><td>${fmt(p.RUNOFF_RATIO, 3)}</td></tr>
+    <tr><td>Trend per decade</td><td>${p.SEN_SLOPE >= 0 ? "+" : ""}${fmt(p.SEN_SLOPE, 3)}${sig}</td></tr>
+  </table>`;
+}
+
+let basins, gauges, potholes;
+const CLOSE_ZOOM = 11;  // past this, basin fills fade so the potholes show through
+const style = f => {
+  const v = VIEWS[view];
+  return {color: "#4a4a4a", weight: 1, fillOpacity: map.getZoom() >= CLOSE_ZOOM ? 0.15 : 0.85,
+          fillColor: v.colors[classify(f.properties[v.field], v.breaks)]};
+};
+
+function legend() {
+  const v = VIEWS[view];
+  let html = `<h2>${v.title}</h2>` + v.labels.map((l, i) =>
+    `<div><span class="sw" style="background:${v.colors[i]}"></span>${l}</div>`).join("");
+  if (view === "trend") html += `<div style="font-size:12px;color:var(--muted)">Theil-Sen slope, 1980–2023; n.s. = not significant</div>`;
+  html += `<div><span class="tri"></span>Streamflow gauge</div>`;
+  if (potholes && map.hasLayer(potholes)) {
+    html += `<h2>Smith Creek potholes (2009–2025)</h2>` + Object.entries(STATUS).map(([k, c]) =>
+      `<div><span class="sw" style="background:${c}"></span>${k}</div>`).join("");
+  }
+  document.getElementById("legend").innerHTML = html;
+}
+
+function setView(v) {
+  view = v;
+  document.getElementById("t-storage").setAttribute("aria-pressed", v === "storage");
+  document.getElementById("t-trend").setAttribute("aria-pressed", v === "trend");
+  basins.setStyle(style);
+  labels();
+  legend();
+}
+
+// Neighbouring basins overlap at the overview zoom, so names show on hover there and as
+// permanent labels once zoomed in (but not in the pothole close-up)
+const LABEL_ZOOM = 8;
+function labels() {
+  const z = map.getZoom(), permanent = z >= LABEL_ZOOM && z < CLOSE_ZOOM;
+  basins.eachLayer(l => {
+    l.unbindTooltip();
+    l.bindTooltip(label(l.feature.properties),
+                  permanent ? {permanent, direction: "center", className: "label"} : {sticky: true});
+  });
+}
+
+function label(p) {
+  if (view === "storage") return `${p.SHORT_NAME}<br>${fmt(p.STORAGE_MM, 0)} mm`;
+  const sig = p.TREND_P < 0.05 ? "" : " (n.s.)";
+  return `${p.SHORT_NAME}<br>${p.SEN_SLOPE >= 0 ? "+" : ""}${fmt(p.SEN_SLOPE, 3)}${sig}`;
+}
+
+async function loadPotholes() {
+  if (potholes) return potholes;
+  const status = document.getElementById("loading");
+  status.style.display = "block";
+  const data = await (await fetch("data/smith_creek_potholes.geojson")).json();
+  potholes = L.geoJSON(data, {
+    renderer: L.canvas(),
+    style: f => ({stroke: false, fillOpacity: 0.85, fillColor: STATUS[f.properties.STATUS] || "#c3c2b7"}),
+    onEachFeature: (f, l) => l.bindPopup(() => {
+      const p = f.properties;
+      return `<h3>${p.STATUS}</h3><table>
+        <tr><td>Area</td><td>${fmt(p.AREA_M2 / 1e4, 2)} ha</td></tr>
+        <tr><td>Storage</td><td>${fmt(p.VOLUME_M3, 0)} m³</td></tr>
+        <tr><td>Max depth</td><td>${fmt(p.MAX_DEPTH_M, 2)} m</td></tr>
+        <tr><td>Years wet</td><td>${p.WET_YEARS} of ${p.N_YEARS}</td></tr></table>`;
+    }),
+  });
+  status.style.display = "none";
+  return potholes;
+}
+
+Promise.all(["basins", "gauges"].map(n => fetch(`data/${n}.geojson`).then(r => r.json())))
+  .then(([b, g]) => {
+    basins = L.geoJSON(b, {
+      style,
+      onEachFeature: (f, l) => l.bindPopup(popup(f.properties)),
+    }).addTo(map);
+    gauges = L.geoJSON(g, {
+      pointToLayer: (f, ll) => L.marker(ll, {icon: L.divIcon({className: "", html: '<div class="tri"></div>', iconSize: [12, 11]})})
+        .bindTooltip(`${f.properties.STATION_NAME} (${f.properties.STATION_NUMBER})`),
+    }).addTo(map);
+    labels();
+    legend();
+    if (location.hash === "#smith") document.getElementById("smith").click();  // shareable close-up link
+    else map.fitBounds(basins.getBounds(), {padding: [20, 20], animate: false});
+  });
+
+document.getElementById("t-storage").onclick = () => setView("storage");
+document.getElementById("t-trend").onclick = () => setView("trend");
+document.getElementById("smith").onclick = async () => {
+  const layer = await loadPotholes();
+  if (!map.hasLayer(layer)) layer.addTo(map);
+  map.stop();  // a pan still in progress would otherwise land after this jump
+  map.setView(layer.getBounds().getCenter(), 13, {animate: false});
+  legend();
+};
+map.on("zoomend", () => {
+  if (!basins) return;
+  basins.setStyle(style);
+  labels();
+});
+</script>
+</body>
+</html>

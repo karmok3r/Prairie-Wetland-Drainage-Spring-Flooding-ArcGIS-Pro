@@ -41,20 +41,28 @@ def rgb(hex_color, alpha=100):
 def gauges():
     out = str(GDB / "Gauges")
     cache = RAW / "stations.json"
-    if not cache.exists():
-        r = requests.get("https://api.weather.gc.ca/collections/hydrometric-stations/items",
-                         params={"STATION_NUMBER": ",".join(BASINS), "f": "json", "limit": 50},
-                         timeout=120)
-        cache.write_text(r.text)
+    if not cache.exists() or not json.loads(cache.read_text())["features"]:
+        # GeoMet ignores a comma-separated STATION_NUMBER list, so ask for one station at a time
+        found = []
+        for st in BASINS:
+            r = requests.get("https://api.weather.gc.ca/collections/hydrometric-stations/items",
+                             params={"STATION_NUMBER": st, "f": "json"}, timeout=120)
+            r.raise_for_status()
+            found += r.json()["features"]
+        if len(found) < len(BASINS):
+            sys.exit(f"Only {len(found)} of {len(BASINS)} gauges found; not caching")
+        cache.write_text(json.dumps({"type": "FeatureCollection", "features": found}))
     feats = [f for f in json.loads(cache.read_text())["features"]
              if f["properties"]["STATION_NUMBER"] in BASINS]
     arcpy.management.CreateFeatureclass(str(GDB), "Gauges", "POINT", spatial_reference=SR)
     arcpy.management.AddField(out, "STATION_NUMBER", "TEXT", field_length=10)
-    with arcpy.da.InsertCursor(out, ["STATION_NUMBER", "SHAPE@"]) as ins:
+    arcpy.management.AddField(out, "STATION_NAME", "TEXT", field_length=80)
+    with arcpy.da.InsertCursor(out, ["STATION_NUMBER", "STATION_NAME", "SHAPE@"]) as ins:
         for f in feats:
-            x, y = f["geometry"]["coordinates"]
+            x, y = f["geometry"]["coordinates"][:2]
             pt = arcpy.PointGeometry(arcpy.Point(x, y), arcpy.SpatialReference(4326)).projectAs(SR)
-            ins.insertRow([f["properties"]["STATION_NUMBER"], pt])
+            ins.insertRow([f["properties"]["STATION_NUMBER"],
+                           f["properties"]["STATION_NAME"].title(), pt])
     return out
 
 

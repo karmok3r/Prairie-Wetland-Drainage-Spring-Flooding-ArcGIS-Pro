@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 STEPS = ["01_download_data", "02_depressions", "03_wetland_status", "04_runoff_analysis",
-         "05_make_maps"]
+         "05_make_maps", "07_export_web_map"]  # 06 (ArcGIS Online) is run by hand
 SCRIPTS = Path(__file__).parent / "scripts"
 ES_CONTINUOUS, ES_SYSTEM_REQUIRED = 0x80000000, 0x00000001
 

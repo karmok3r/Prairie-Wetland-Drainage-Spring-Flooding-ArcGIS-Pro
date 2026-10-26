@@ -88,9 +88,11 @@ In most basins, more than 90% of storage sits in potholes that hold water in at 
 
 ![Runoff trend map](maps/02_runoff_trend.png)
 
-## Web map
+## Interactive web map
 
-An interactive version (basins with all metrics, gauges, and Smith Creek potholes by status) is published to ArcGIS Online: *link added after publishing*.
+**[Open the web map](https://karmok3r.github.io/Prairie-Wetland-Drainage-Spring-Flooding-ArcGIS-Pro/)**: click a basin for all its metrics, switch between storage and runoff trend, and zoom into Smith Creek's 7,540 potholes coloured by status ([direct link](https://karmok3r.github.io/Prairie-Wetland-Drainage-Spring-Flooding-ArcGIS-Pro/#smith)).
+
+It runs on Leaflet and GitHub Pages and needs no server or account. `scripts/07_export_web_map.py` exports the layers to simplified GeoJSON in `docs/data/`.
 
 ## Limitations
 
@@ -117,6 +119,7 @@ Requires ArcGIS Pro 3.x with Spatial Analyst. About 2.6 GB of data is downloaded
 | `scripts/04_runoff_analysis.py` | runoff ratios, correlations, trends, charts | < 1 min |
 | `scripts/05_make_maps.py` | builds `Prairie_Wetland_Storage.aprx` and exports the four layouts | ~2 min |
 | `scripts/06_publish_web_map.py` | optional: hosted feature layer + web map on ArcGIS Online, using ArcGIS Pro's sign-in (items are created private) | ~2 min |
+| `scripts/07_export_web_map.py` | GeoJSON for the Leaflet web map in `docs/` | < 1 min |
 
 `run_all.py` stops Windows from sleeping during the run. A sleeping laptop looks exactly like a hung geoprocessing tool.
 
@@ -143,6 +146,7 @@ All open data:
 - **Hydrological time series and non-parametric statistics:** Spearman, Theil-Sen and Mann-Kendall with pandas and scipy.
 - **Quality control:** checked against a published benchmark, and false depressions traced to specific embankments and removed.
 - **Python toolbox (.pyt) development** and a reproducible, resumable pipeline.
+- **Web mapping:** GeoJSON export with simplification, and a Leaflet map with popups, a view toggle and lazy-loaded detail, hosted free on GitHub Pages.
 
 ## About this project
 
