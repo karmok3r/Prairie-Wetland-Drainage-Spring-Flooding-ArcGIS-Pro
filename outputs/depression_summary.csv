@@ -1,0 +1,13 @@
+STATION_NUMBER,basin,basin_km2,n_depressions,depressions_per_km2,depression_area_pct,storage_mm,median_depression_ha
+05MA021,Magnusson Creek near Wynyard,91.8,644,7.0,3.02,13.8,0.19
+05MA020,Quill Creek near Quill Lake,267.5,2906,10.9,5.11,17.1,0.19
+05MB006,Crooked Hill Creek near Canora,559.6,8756,15.6,7.11,24.8,0.21
+05MB007,Spirit Creek near Buchanan,254.5,3629,14.3,7.07,28.7,0.22
+05MA012,Ironspring Creek near Watson,558.8,5194,9.3,6.08,29.8,0.2
+05MA016,Romance Creek near Watson,525.8,6001,11.4,8.2,40.1,0.22
+05JF011,Cottonwood Creek near Lumsden,619.2,4021,6.5,6.76,43.7,0.24
+05MD010,Stony Creek near Kamsack,437.7,7492,17.1,11.61,47.4,0.23
+05ME007,Smith Creek near Marchwell,438.8,7540,17.2,11.44,50.1,0.24
+05MA011,Birch Creek near Elfros,689.0,10177,14.8,11.17,62.6,0.23
+05ND011,Shepherd Creek near Alameda,173.8,3155,18.2,20.14,91.1,0.29
+05MB005,Willow Brook at Willowbrook,384.1,8011,20.9,18.77,113.8,0.27

@@ -1,0 +1,5 @@
+variable,spearman_rho,p_value,n
+LiDAR depression storage (mm),-0.84,0.001,12
+Depression area (% of basin),-0.68,0.015,12
+Share of storage farmed through (%),0.29,0.354,12
+AAFC effective area (% of gross),0.24,0.457,12

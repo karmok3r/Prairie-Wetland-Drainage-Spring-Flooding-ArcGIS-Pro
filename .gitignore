@@ -1,0 +1,12 @@
+# Raw downloads (LiDAR DEMs, crop inventory, AAFC layers) are re-created by scripts/01_download_data.py
+data/raw/
+# Geodatabase and depression rasters are rebuilt by the pipeline
+data/*.gdb/
+data/regions/
+# ArcGIS Pro working files
+*.aprx.lock
+.backups/
+ImportLog/
+Index/
+GpMessages/
+__pycache__/

@@ -1,0 +1,13 @@
+STATION_NUMBER,basin,basin_km2,n_depressions,depressions_per_km2,depression_area_pct,storage_mm,median_depression_ha,farmed_storage_pct,wetland_area_pct_of_basin,effective_pct,years,median_runoff_mm,median_runoff_ratio,median_water_in_mm
+05MA021,Magnusson Creek near Wynyard,91.8,644,7.0,3.02,13.8,0.19,7.8,2.5,86.879,44,21.729,0.126,199.47
+05MA020,Quill Creek near Quill Lake,267.5,2906,10.9,5.11,17.1,0.19,6.9,4.5,32.828,42,15.643,0.079,227.895
+05MB006,Crooked Hill Creek near Canora,559.6,8756,15.6,7.11,24.8,0.21,5.4,6.2,25.043,42,22.52,0.102,228.88
+05MB007,Spirit Creek near Buchanan,254.5,3629,14.3,7.07,28.7,0.22,0.9,6.8,37.348,42,25.831,0.144,228.74
+05MA012,Ironspring Creek near Watson,558.8,5194,9.3,6.08,29.8,0.2,10.9,4.9,55.436,44,18.23,0.089,203.935
+05MA016,Romance Creek near Watson,525.8,6001,11.4,8.2,40.1,0.22,5.9,7.3,38.398,44,10.448,0.059,196.425
+05JF011,Cottonwood Creek near Lumsden,619.2,4021,6.5,6.76,43.7,0.24,8.5,4.8,43.287,44,2.454,0.016,180.295
+05MD010,Stony Creek near Kamsack,437.7,7492,17.1,11.61,47.4,0.23,4.3,10.6,20.16,44,16.139,0.063,236.08
+05ME007,Smith Creek near Marchwell,438.8,7540,17.2,11.44,50.1,0.24,2.4,10.7,19.219,44,16.89,0.07,230.64
+05MA011,Birch Creek near Elfros,689.0,10177,14.8,11.17,62.6,0.23,1.2,10.8,36.01,44,10.766,0.055,203.875
+05ND011,Shepherd Creek near Alameda,173.8,3155,18.2,20.14,91.1,0.29,0.4,19.5,34.183,32,1.504,0.007,249.075
+05MB005,Willow Brook at Willowbrook,384.1,8011,20.9,18.77,113.8,0.27,1.4,17.0,21.729,44,4.208,0.016,233.36

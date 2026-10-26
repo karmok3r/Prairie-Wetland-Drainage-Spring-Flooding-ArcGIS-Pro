@@ -1,0 +1,13 @@
+STATION_NUMBER,basin,years,sen_slope_per_decade,ci_low,ci_high,kendall_tau,p_value
+05ND011,Shepherd Creek near Alameda,32,-0.0,-0.0046,0.0041,-0.01,0.961
+05JF011,Cottonwood Creek near Lumsden,44,0.0012,-0.0029,0.0127,0.09,0.384
+05MB005,Willow Brook at Willowbrook,44,0.0121,0.0029,0.0244,0.35,0.001
+05MA016,Romance Creek near Watson,44,0.0155,0.0022,0.0343,0.24,0.021
+05MD010,Stony Creek near Kamsack,44,0.0195,0.0052,0.0349,0.29,0.005
+05MA011,Birch Creek near Elfros,44,0.0206,0.0062,0.035,0.31,0.003
+05MA020,Quill Creek near Quill Lake,42,0.0225,0.0026,0.0525,0.24,0.028
+05MA021,Magnusson Creek near Wynyard,44,0.0242,-0.0003,0.0504,0.2,0.052
+05MB006,Crooked Hill Creek near Canora,42,0.0305,0.0124,0.0488,0.37,0.001
+05MA012,Ironspring Creek near Watson,44,0.0317,0.01,0.057,0.29,0.005
+05ME007,Smith Creek near Marchwell,44,0.0336,0.0183,0.0496,0.45,0.0
+05MB007,Spirit Creek near Buchanan,42,0.0399,0.0132,0.0724,0.31,0.004

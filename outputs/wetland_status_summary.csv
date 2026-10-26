@@ -1,0 +1,13 @@
+STATION_NUMBER,basin,persistent_n,persistent_area_pct_of_depr,persistent_storage_pct,intermittent_n,intermittent_area_pct_of_depr,intermittent_storage_pct,farmed_n,farmed_area_pct_of_depr,farmed_storage_pct,grassland_n,grassland_area_pct_of_depr,grassland_storage_pct,wetland_area_pct_of_basin
+05ME007,Smith Creek near Marchwell,1755,51.6,59.0,4709,41.5,35.7,519,3.5,2.4,557,3.3,2.9,10.7
+05MD010,Stony Creek near Kamsack,1250,48.7,57.4,4771,42.5,36.0,857,5.8,4.3,614,3.0,2.3,10.6
+05MB005,Willow Brook at Willowbrook,1125,50.3,54.7,4934,40.1,36.4,231,1.3,1.4,1721,8.3,7.6,17.0
+05MB006,Crooked Hill Creek near Canora,876,32.8,42.3,6011,54.1,47.7,960,7.7,5.4,909,5.4,4.6,6.2
+05MB007,Spirit Creek near Buchanan,542,43.9,54.5,2774,52.4,42.6,101,1.2,0.9,212,2.5,2.0,6.8
+05MA011,Birch Creek near Elfros,1152,49.0,62.5,8074,47.5,35.3,459,1.9,1.2,492,1.6,1.1,10.8
+05MA021,Magnusson Creek near Wynyard,9,10.0,9.3,457,72.3,75.8,103,10.8,7.8,75,6.9,7.0,2.5
+05MA016,Romance Creek near Watson,495,39.5,54.4,4058,49.7,38.4,1188,9.0,5.9,260,1.8,1.3,7.3
+05MA020,Quill Creek near Quill Lake,231,33.2,45.7,2099,54.2,45.1,402,9.5,6.9,174,3.1,2.3,4.5
+05MA012,Ironspring Creek near Watson,478,29.1,47.3,3281,51.4,40.0,1142,16.6,10.9,293,2.9,1.8,4.9
+05JF011,Cottonwood Creek near Lumsden,106,11.8,14.2,1814,59.6,69.9,1642,18.8,8.5,459,9.8,7.4,4.8
+05ND011,Shepherd Creek near Alameda,53,5.2,4.0,2817,91.9,93.6,77,0.5,0.4,208,2.4,1.9,19.5
